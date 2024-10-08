@@ -32,3 +32,54 @@
  {
      Assert.Throws<ArgumentOutOfRangeException>(() => _calculator.Log(a, b));
  }
+
+
+using Moq;
+using TestingLib.Shop;
+using TestingLib.Weather;
+
+namespace UnitTesting.MYARPHA
+{
+    public class Basic
+    {
+        public static Mock<IWeatherForecastSource> mockWeatherForecastSource;
+        public static Mock<INotificationService> mockNotificationServies;
+        public static Mock<ICustomerRepository> mockCustoerRepository;
+        public static Mock<IOrderRepository> mockOrderRepository;
+
+        public Basic()
+        {
+            mockWeatherForecastSource = new Mock<IWeatherForecastSource>();
+            mockNotificationServies = new Mock<INotificationService>();
+            mockCustoerRepository = new Mock<ICustomerRepository>();
+            mockOrderRepository = new Mock<IOrderRepository>();
+
+        }
+
+        [Fact]
+        public void GetWeather()
+        {
+            var timeNow = DateTime.Now;
+            var forecast = new WeatherForecast
+            {
+                Date = timeNow,
+                Summary = "Холодно жесть!!",
+                TemperatureC = 44
+            };
+
+            mockWeatherForecastSource.Setup(repo => repo.GetForecast(timeNow)).Returns(forecast);
+
+            var service = new WeatherForecastService(mockWeatherForecastSource.Object);
+            var result = service.GetWeatherForecast(timeNow);
+
+            Assert.Equal(result, forecast);
+        }
+
+        [Fact]
+        public void GetCustomerInfo() 
+        {
+            var customer = new Customer;
+            var order = new Order { };
+        }
+    }
+}
