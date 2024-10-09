@@ -76,10 +76,36 @@ namespace UnitTesting.MYARPHA
         }
 
         [Fact]
-        public void GetCustomerInfo() 
-        {
-            var customer = new Customer;
-            var order = new Order { };
-        }
+public void GetCustomerInfo_ReturnsCustomerInfo()
+{
+    int customerId = 1;
+
+    var customer = new Customer { Email = "test@gmail.com", Id = customerId, Name = "Cory" };
+    var order = new Order { Amount = 10, Customer = customer, Date = DateTime.Now, Id = 1 };
+
+    mockCustomerRepository.Setup(repo => repo.GetCustomerById(1)).Returns(customer);
+    mockOrderRepository.Setup(repo => repo.GetOrders().ToString()).Returns(Convert.ToString(order));
+
+    var service = new ShopService(mockCustomerRepository.Object, mockOrderRepository.Object, mockNotificationService.Object);
+    var result = service.GetCustomerInfo(customerId);
+
+    Assert.NotEmpty(result);
+}
+
+[Fact]
+public void CreateOrder_AddsOrder()
+{
+    var customer = new Customer { Email = "test@icloud.com", Id = 1, Name = "Alyssa" };
+    var order = new Order { Amount = 1, Customer =  customer, Date = DateTime.Now, Id = 1};
+
+    mockOrderRepository.Setup(repo => repo.AddOrder(order));
+
+    var service = new ShopService(mockCustomerRepository.Object, mockOrderRepository.Object, mockNotificationService.Object);
+    service.CreateOrder(order);
+
+    mockOrderRepository.Verify(repo => repo.AddOrder(It.IsAny<Order>()), Times.Once);
+}
     }
 }
+
+
